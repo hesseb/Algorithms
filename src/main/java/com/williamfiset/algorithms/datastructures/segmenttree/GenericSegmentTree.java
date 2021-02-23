@@ -17,6 +17,8 @@ import java.util.function.BinaryOperator;
 
 public class GenericSegmentTree {
 
+  boolean[] coverage = new boolean[24];
+
   // The type of segment combination function to use
   public static enum SegmentCombinationFn {
     SUM,
@@ -167,12 +169,18 @@ public class GenericSegmentTree {
       SegmentCombinationFn segmentCombinationFunction,
       RangeUpdateFn rangeUpdateFunction) {
     if (values == null) {
+      //ID: 1
+      coverage[0] = true;
       throw new IllegalArgumentException("Segment tree values cannot be null.");
     }
     if (segmentCombinationFunction == null) {
+      //ID: 2
+      coverage[1] = true;
       throw new IllegalArgumentException("Please specify a valid segment combination function.");
     }
     if (rangeUpdateFunction == null) {
+      //ID: 3
+      coverage[2] = true;
       throw new IllegalArgumentException("Please specify a valid range update function.");
     }
     n = values.length;
@@ -189,71 +197,119 @@ public class GenericSegmentTree {
 
     // Select the specified combination function
     if (segmentCombinationFunction == SegmentCombinationFn.SUM) {
+      //ID: 4
+      coverage[3] = true;
       combinationFn = sumCombinationFn;
       if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+        //ID: 5
+        coverage[4] = true;
         ruf = sumQuerySumUpdate;
         lruf = lsumQuerySumUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+        //ID: 6
+        coverage[5] = true;
         ruf = sumQueryAssignUpdate;
         lruf = lsumQueryAssignUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+        //ID: 7
+        coverage[6] = true;
         ruf = sumQueryMulUpdate;
         lruf = lsumQueryMulUpdate;
       }
     } else if (segmentCombinationFunction == SegmentCombinationFn.MIN) {
+      coverage[7] = true;
+      //ID: 8
       combinationFn = minCombinationFn;
       if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+        //ID: 9
+        coverage[8] = true;
         ruf = minQuerySumUpdate;
         lruf = lminQuerySumUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+        //ID: 10
+        coverage[9] = true;
         ruf = minQueryAssignUpdate;
         lruf = lminQueryAssignUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+        //ID: 11
+        coverage[10] = true;
         ruf = minQueryMulUpdate;
         lruf = lminQueryMulUpdate;
       }
     } else if (segmentCombinationFunction == SegmentCombinationFn.MAX) {
+      //ID: 12
+      coverage[11] = true;
       combinationFn = maxCombinationFn;
       if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+        //ID: 13
+        coverage[12] = true;
         ruf = maxQuerySumUpdate;
         lruf = lmaxQuerySumUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+        //ID: 14
+        coverage[13] = true;
         ruf = maxQueryAssignUpdate;
         lruf = lmaxQueryAssignUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+        //ID: 15
+        coverage[14] = true;
         ruf = maxQueryMulUpdate;
         lruf = lmaxQueryMulUpdate;
       }
     } else if (segmentCombinationFunction == SegmentCombinationFn.GCD) {
+      //ID: 16
+      coverage[15] = true;
       combinationFn = gcdCombinationFn;
       if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+        //ID: 17
+        coverage[16] = true;
         ruf = gcdQuerySumUpdate;
         lruf = lgcdQuerySumUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+        //ID: 18
+        coverage[17] = true;
         ruf = gcdQueryAssignUpdate;
         lruf = lgcdQueryAssignUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+        //ID: 19
+        coverage[18] = true;
         ruf = gcdQueryMulUpdate;
         lruf = lgcdQueryMulUpdate;
       }
     } else if (segmentCombinationFunction == SegmentCombinationFn.PRODUCT) {
+      //ID: 20
+      coverage[19] = true;
       combinationFn = productCombinationFn;
       if (rangeUpdateFunction == RangeUpdateFn.ADDITION) {
+        //ID: 21
+        coverage[20] = true;
         ruf = productQuerySumUpdate;
         lruf = lproductQuerySumUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.ASSIGN) {
+        //ID: 22
+        coverage[21] = true;
         ruf = productQueryAssignUpdate;
         lruf = lproductQueryAssignUpdate;
       } else if (rangeUpdateFunction == RangeUpdateFn.MULTIPLICATION) {
+        //ID: 23
+        coverage[22] = true;
         ruf = productQueryMulUpdate;
         lruf = lproductQueryMulUpdate;
       }
     } else {
+      //ID: 24
+      coverage[23] = true;
       throw new UnsupportedOperationException(
           "Combination function not supported: " + segmentCombinationFunction);
     }
 
     buildSegmentTree(0, 0, n - 1, values);
+
+    //print coverage-vector
+    for(int i=0; i<coverage.length; i++){
+      System.out.print((i+1)+": "+coverage[i]+", ");
+    }
+    System.out.println("");
   }
 
   /**
