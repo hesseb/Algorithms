@@ -7,7 +7,8 @@ package com.williamfiset.algorithms.datastructures.segmenttree;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.williamfiset.algorithms.utils.TestUtils;
-import org.junit.Test;
+import org.junit.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GenericSegmentTreeTest {
 
@@ -234,6 +235,30 @@ public class GenericSegmentTreeTest {
   //   // st.rangeUpdate1(0, 4, -2);
   //   // assertThat(st.rangeQuery1(0, 4)).isEqualTo(2); // Returns -8 as max but should be 2
   // }
+
+  @Test
+  public void testNullValues() {
+    long [] values = null;
+
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      GenericSegmentTree tree = new GenericSegmentTree(values, GenericSegmentTree.SegmentCombinationFn.GCD, GenericSegmentTree.RangeUpdateFn.ASSIGN);
+    });
+    String expectedMessage = "Segment tree values cannot be null.";
+    String exceptionMessage = exception.getMessage();
+    assertThat(exceptionMessage.equals(expectedMessage));
+  }
+
+  @Test
+  public void testMaxAndMultiplication(){
+    long [] values = {1, 2, 3, 4};
+    GenericSegmentTree.SegmentCombinationFn segFn = GenericSegmentTree.SegmentCombinationFn.MAX;
+    GenericSegmentTree.RangeUpdateFn rangeUpdateFn = GenericSegmentTree.RangeUpdateFn.MULTIPLICATION;
+    GenericSegmentTree tree = new GenericSegmentTree(values, segFn,rangeUpdateFn);
+    assert(tree.rangeQuery1(0,3) == values[3]);
+    tree.rangeUpdate1(0,3,2);
+    assert(tree.rangeQuery1(0,3) == values[3]*2);
+  }
+
 
   @Test
   public void testAllFunctionCombinations() {
