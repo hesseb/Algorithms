@@ -14,6 +14,23 @@ public class GenericSegmentTreeTest {
   static int ITERATIONS = 250;
   static int MAX_N = 17;
 
+  @Test
+  public void testConstructorSCFNull(){
+    try{
+      GenericSegmentTree st = new GenericSegmentTree(new long[]{1, 2, 3, 4, 5}, null, null);
+    }catch(IllegalArgumentException exception){
+      assert(exception.getMessage().equals("Please specify a valid segment combination function."));
+    }
+  }
+
+  @Test
+  public void testConstructorSCFMinRUFMultiplication(){
+      GenericSegmentTree st = new GenericSegmentTree(new long[]{1,2,3,4,5}, GenericSegmentTree.SegmentCombinationFn.MIN, GenericSegmentTree.RangeUpdateFn.MULTIPLICATION);
+      assertThat(st.rangeQuery1(0, 4)).isEqualTo(1);
+      st.rangeUpdate1(0,4,2);
+      assertThat(st.rangeQuery1(0,4)).isEqualTo(2);
+  }
+
   // @Before
   // public void setup() {}
 
