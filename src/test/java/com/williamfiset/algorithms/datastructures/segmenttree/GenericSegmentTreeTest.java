@@ -232,6 +232,18 @@ public class GenericSegmentTreeTest {
   }
 
   @Test
+  public void testMaxAndMultiplication(){
+    long [] values = {1, 2, 3, 4};
+    GenericSegmentTree.SegmentCombinationFn segFn = GenericSegmentTree.SegmentCombinationFn.MAX;
+    GenericSegmentTree.RangeUpdateFn rangeUpdateFn = GenericSegmentTree.RangeUpdateFn.MULTIPLICATION;
+    GenericSegmentTree tree = new GenericSegmentTree(values, segFn,rangeUpdateFn);
+    assert(tree.rangeQuery1(0,3) == values[3]);
+    tree.rangeUpdate1(0,3,2);
+    assert(tree.rangeQuery1(0,3) == values[3]*2);
+  }
+
+
+  @Test
   public void testAllFunctionCombinations() {
     GenericSegmentTree.SegmentCombinationFn[] combinationFns = {
       GenericSegmentTree.SegmentCombinationFn.SUM,
