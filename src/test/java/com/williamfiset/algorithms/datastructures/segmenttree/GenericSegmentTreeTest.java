@@ -7,7 +7,8 @@ package com.williamfiset.algorithms.datastructures.segmenttree;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.williamfiset.algorithms.utils.TestUtils;
-import org.junit.Test;
+import org.junit.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GenericSegmentTreeTest {
 
@@ -217,6 +218,18 @@ public class GenericSegmentTreeTest {
   //   // st.rangeUpdate1(0, 4, -2);
   //   // assertThat(st.rangeQuery1(0, 4)).isEqualTo(2); // Returns -8 as max but should be 2
   // }
+
+  @Test
+  public void testNullValues() {
+    long [] values = null;
+
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      GenericSegmentTree tree = new GenericSegmentTree(values, GenericSegmentTree.SegmentCombinationFn.GCD, GenericSegmentTree.RangeUpdateFn.ASSIGN);
+    });
+    String expectedMessage = "Segment tree values cannot be null.";
+    String exceptionMessage = exception.getMessage();
+    assertThat(exceptionMessage.equals(expectedMessage));
+  }
 
   @Test
   public void testAllFunctionCombinations() {
