@@ -54,30 +54,127 @@ public class SubstringVerificationSuffixArray {
     }
 
     private void construct() {
+      System.err.println("Segment coverage for decodeImage:");
+      int[] branchFlags = new int[15];
+
       int i, p, r;
-      for (i = 0; i < N; ++i) c[rank[i] = T[i]]++;
-      for (i = 1; i < ALPHABET_SZ; ++i) c[i] += c[i - 1];
-      for (i = N - 1; i >= 0; --i) sa[--c[T[i]]] = i;
+
+      for (i = 0; i < N; ++i)
+      {
+        //0
+        branchFlags[0]++;
+        c[rank[i] = T[i]]++;
+      }
+
+      for (i = 1; i < ALPHABET_SZ; ++i)
+      {
+        //1
+        branchFlags[1]++;
+        c[i] += c[i - 1];
+      }
+
+      for (i = N - 1; i >= 0; --i)
+      {
+        //2
+        branchFlags[2]++;
+        sa[--c[T[i]]] = i;
+      }
+
       for (p = 1; p < N; p <<= 1) {
-        for (r = 0, i = N - p; i < N; ++i) sa2[r++] = i;
-        for (i = 0; i < N; ++i) if (sa[i] >= p) sa2[r++] = sa[i] - p;
+        //3
+        branchFlags[3]++;
+
+        for (r = 0, i = N - p; i < N; ++i)
+        {
+          //4
+          branchFlags[4]++;
+          sa2[r++] = i;
+        }
+
+        for (i = 0; i < N; ++i) if (sa[i] >= p)
+        {
+          //5
+          branchFlags[5]++;
+          sa2[r++] = sa[i] - p;
+        }
+
         Arrays.fill(c, 0, ALPHABET_SZ, 0);
-        for (i = 0; i < N; ++i) c[rank[i]]++;
-        for (i = 1; i < ALPHABET_SZ; ++i) c[i] += c[i - 1];
-        for (i = N - 1; i >= 0; --i) sa[--c[rank[sa2[i]]]] = sa2[i];
+
+        for (i = 0; i < N; ++i)
+        {
+          //6
+          branchFlags[6]++;
+          c[rank[i]]++;
+        }
+
+        for (i = 1; i < ALPHABET_SZ; ++i)
+        {
+          //7
+          branchFlags[7]++;
+          c[i] += c[i - 1];
+        }
+
+        for (i = N - 1; i >= 0; --i)
+        {
+          //8
+          branchFlags[8]++;
+          sa[--c[rank[sa2[i]]]] = sa2[i];
+        }
+
         for (sa2[sa[0]] = r = 0, i = 1; i < N; ++i) {
+          //9
+          branchFlags[9]++;
+
+          //10 - 13
           if (!(rank[sa[i - 1]] == rank[sa[i]]
               && sa[i - 1] + p < N
               && sa[i] + p < N
-              && rank[sa[i - 1] + p] == rank[sa[i] + p])) r++;
+              && rank[sa[i - 1] + p] == rank[sa[i] + p]))
+          {
+            if (!(rank[sa[i - 1]] == rank[sa[i]]))
+            {
+              //10
+              branchFlags[10]++;
+            }
+            else if (!(sa[i - 1] + p < N))
+            {
+              //11
+              branchFlags[11]++;
+            }
+            else if (!(sa[i] + p < N))
+            {
+              //12
+              branchFlags[12]++;
+            }
+            else if (!(rank[sa[i - 1] + p] == rank[sa[i] + p]))
+            {
+              //13
+              branchFlags[13]++;
+            }
+            r++;
+          }
           sa2[sa[i]] = r;
         }
         tmp = rank;
         rank = sa2;
         sa2 = tmp;
-        if (r == N - 1) break;
+
+        if (r == N - 1)
+        {
+          //14
+          branchFlags[14]++;
+          break;
+        }
+
         ALPHABET_SZ = r + 1;
       }
+      System.err.println(Arrays.toString(branchFlags));
+      System.err.println("Branches covered:");
+      for(int j = 0; j < branchFlags.length; j++)
+      {
+        if (branchFlags[j] > 0) System.err.print(j + " ");
+      }
+      System.err.println("\nBranch coverage finished.\n");
     }
 
     // Runs on O(mlog(n)) where m is the length of the substring
