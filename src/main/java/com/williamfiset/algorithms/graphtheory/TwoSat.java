@@ -50,6 +50,14 @@ public class TwoSat {
         solve();
     }
 
+    public void addEdge(int a, int b, boolean inverse){
+        if(!inverse){
+            adjacencyList.get(a).add(b);
+        }else{
+            adjacencyListInverse.get(b).add(a);
+        }
+    }
+
     public void addEdge(int a, int b){
         adjacencyList.get(a).add(b);
     }
@@ -97,31 +105,49 @@ public class TwoSat {
 
         //x is mapped to x
         //negation of x is mapped to n+x (=n-(-x))
-
-
-
         for(int i=0; i<numClauses; i++){
-            //TODO: check if the cases can be combined into one
+
+            //TODO: check if the cases can be combined
             if(a[i] > 0 && b[i] > 0){
-                addEdge(a[i]+numVariables, b[i]);
-                addEdgeInverse(a[i]+numVariables, b[i]);
-                addEdge(b[i]+numVariables, a[i]);
-                addEdgeInverse(b[i]+numVariables, a[i]);
+                //add edge from negated a to b
+                addEdge(a[i]+numVariables, b[i], false);
+                //add flipped edge to inverse graph
+                addEdge(a[i]+numVariables, b[i], true);
+
+                //add edge from negated b to a
+                addEdge(b[i]+numVariables, a[i], false);
+                //add flipped edge to inverse graph
+                addEdge(b[i]+numVariables, a[i], true);
             } else if(a[i] > 0 && b[i] < 0){
-                addEdge(a[i]+numVariables, numVariables-b[i]);
-                addEdgeInverse(a[i]+numVariables, numVariables-b[i]);
-                addEdge(-b[i], a[i]);
-                addEdgeInverse(-b[i], a[i]);
+                //add edge from negated a to b
+                addEdge(a[i]+numVariables, numVariables-b[i], false);
+                //add flipped edge to inverse graph
+                addEdge(a[i]+numVariables, numVariables-b[i], true);
+
+                //add edge from negated b to a
+                addEdge(-b[i], a[i], false);
+                //add flipped edge to inverse graph
+                addEdge(-b[i], a[i], true);
             } else if(a[i] < 0 && b[i] > 0){
-                addEdge(-a[i], b[i]);
-                addEdgeInverse(-a[i], b[i]);
-                addEdge(b[i]+numVariables, numVariables-a[i]);
-                addEdgeInverse(b[i]+numVariables, numVariables-a[i]);
+                //add edge from negated a to b
+                addEdge(-a[i], b[i], false);
+                //add flipped edge to inverse graph
+                addEdge(-a[i], b[i], true);
+
+                //add edge from negated b to a
+                addEdge(b[i]+numVariables, numVariables-a[i], false);
+                //add flipped edge to inverse graph
+                addEdge(b[i]+numVariables, numVariables-a[i], true);
             } else{
-                addEdge(-a[i], numVariables-b[i]);
-                addEdgeInverse(-a[i], numVariables-b[i]);
-                addEdge(-b[i], numVariables-a[i]);
-                addEdgeInverse(-b[i], numVariables-a[i]);
+                //add edge from negated a to b
+                addEdge(-a[i], numVariables-b[i], false);
+                //add flipped edge to inverse graph
+                addEdge(-a[i], numVariables-b[i], true);
+
+                //add edge from negated b to a
+                addEdge(-b[i], numVariables-a[i], false);
+                //add flipped edge to inverse graph
+                addEdge(-b[i], numVariables-a[i], true);
             }
         }
 
