@@ -2,6 +2,7 @@ package com.williamfiset.algorithms.graphtheory;
 
 import java.util.ArrayList;
 import java.util.*;
+import com.williamfiset.algorithms.utils.graphutils.Utils;
 
 public class TwoSat {
     private boolean isSatisfiable = false;
@@ -27,9 +28,12 @@ public class TwoSat {
     private int counter = 1;
 
     Stack<Integer> stack = new Stack<Integer>();
-    public TwoSat(int[] a, int[] b, int numVariables){
+    public TwoSat(int[] a, int[] b, int numVariables) throws IllegalArgumentException{
         if(a.length!=b.length){
             throw new IllegalArgumentException("number of clauses do not match up");
+        }
+        if(numVariables < 0){
+            throw new IllegalArgumentException("number of variables cannot be negative");
         }
         this.a = a;
         this.b = b;
