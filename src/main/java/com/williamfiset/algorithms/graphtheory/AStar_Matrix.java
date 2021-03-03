@@ -5,7 +5,7 @@ import java.util.*;
 public class AStar_Matrix
 {
 
-    private static class Node implements Comparable<Node>
+    public static class Node implements Comparable<Node>
     {
 
         int id;
@@ -61,7 +61,7 @@ public class AStar_Matrix
         }
     }
 
-    private static class Matrix
+    public static class Matrix
     {
         int xSide;
         int ySide;
@@ -99,22 +99,17 @@ public class AStar_Matrix
         @Override
         public String toString()
         {
-            boolean printIndex = true;
-            String str = "";      
+            String str = "";
             for(int j = 0; j < ySide; j++)
             {
                 for(int i = 0; i < xSide; i++)
                 {
                     if (nodes[j*xSide + i].traversable)
                     {
-                        if (printIndex)
-                        {
-                            int index = j*xSide + i;
-                            str += "[";
-                            if (index < 10) str += " ";
-                            str += index + "]";
-                        }
-                        else str += "[ ]";
+                        int index = j*xSide + i;
+                        str += "[";
+                        if (index < 10) str += " ";
+                        str += index + "]";
                     }
                     else str += "[xx]";
                 }
@@ -155,7 +150,7 @@ public class AStar_Matrix
         }
     }
     
-    private static Matrix mat;
+    public static Matrix mat;
 
     public AStar_Matrix(int xSide, int ySide, boolean[] stage)
     {
@@ -164,15 +159,15 @@ public class AStar_Matrix
 
     public static void main(String[] args)
     {
-        boolean[] stage = {true, false, true, true, true,
-                           true, false, true, false,  true,
-                           true, false, true, false,  true,
-                           true, true, true, false,  true};
+        int xSide = 3;
+        int ySide = 3;
 
-        int start = 19;
-        int end = 0;
-        int xSide = 5;
-        int ySide = 4;
+        boolean[] stage = {true, false, true,
+                true, false, true,
+                true, true, true};
+
+        int start = 0;
+        int end = 2;
 
         mat = new Matrix(xSide, ySide, stage);
         ArrayList<Integer> path = astar(start, end);
@@ -188,6 +183,8 @@ public class AStar_Matrix
             Collections.reverse(path);
             System.out.println(path);
             System.out.println("Path cost: " + mat.getNode(end).getF());
+            System.out.println("Path cost: " + mat.getNode(end).getH());
+            System.out.println("Path cost: " + mat.getNode(end).getG());
         }
     }
 
@@ -239,7 +236,7 @@ public class AStar_Matrix
             maxJ = 1;
             //if curr % xSide == ySide -> on right edge of stage
             //if curr % xSide == 0 -> on left edge of stage
-            if (currNode.id % mat.xSide == mat.ySide) maxI = 0;
+            if (currNode.id % mat.xSide == (mat.xSide - 1)) maxI = 0;
             else if (currNode.id % mat.xSide == 0) minI = 0;
 
             //if curr / xSide == ySide-1 -> on last row
