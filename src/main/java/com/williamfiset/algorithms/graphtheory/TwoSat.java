@@ -181,9 +181,9 @@ public class TwoSat {
         }
 
         //First step of Kosaraju's Algorithm
-        for(int i = 1; i<=2* numVertices; i++){
-            if(!graph.isVisited(i)){
-                dfsFirst(i);
+        for(int v = 1; v<=2* numVertices; v++){
+            if(!graph.isVisited(v)){
+                dfsFirst(v);
             }
         }
 
@@ -198,10 +198,10 @@ public class TwoSat {
             }
         }
 
-        for(int i = 1; i<= numVertices; i++){
+        for(int v = 1; v<= numVertices; v++){
 
             //check if variable and negated variable are in the same Strongly Connected Component
-            if(scc[i] == scc[i+ numVertices]){
+            if(scc[v] == scc[v+ numVertices]){
                 isSatisfiable = false;
                 solved = true;
                 return;
