@@ -1,10 +1,8 @@
 package com.williamfiset.algorithms.graphtheory.networkflow;
-import org.graalvm.compiler.graph.Graph;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+
 
 public class BipartiteGraph {
 
@@ -13,17 +11,13 @@ public class BipartiteGraph {
 
     private int vertexCount;
     private int numEdges = 0;
-    private int leftPartition;
-    private int rightPartition;
-    private boolean[] marked;
-    private boolean isBipartite;
+    private static boolean isBipartite;
+    int [] colorArr;
 
-    public BipartiteGraph(int V1, int V2, int E) {
-        this.vertexCount = V1 + V2;
-        this.leftPartition = V1;
-        this.rightPartition = V2;
-        this.numEdges = E;
+    public BipartiteGraph(int V) {
+        this.vertexCount = V;
         initAdjacencyList();
+
 
     }
 
@@ -36,6 +30,7 @@ public class BipartiteGraph {
     public void addEdge(int from, int to) {
         adjacencyList.get(from).add(to);
         adjacencyList.get(to).add(from);
+        numEdges++;
     }
 
     public void removeDirectedEdge(int from, int to) {
@@ -47,16 +42,37 @@ public class BipartiteGraph {
             }
         }
     }
+    public boolean hasEdge(int x, int y) {
+        if (adjacencyList.get(x).contains(y) || adjacencyList.get(y).contains(x)){
+            return true;
+        }
+        return false;
+    }
 
     public void removeEdge(int from, int to) {
         removeDirectedEdge(from, to);
         removeDirectedEdge(to, from);
     }
 
+    public int getColor(int vertex) {
+        return colorArr[vertex];
+    }
 
-    private void isBipartite() {
+    public List<Integer> getAdjecencyList(int vertex) {
+        return adjacencyList.get(vertex);
+    }
+
+    public int getVertexCount() {
+        return this.vertexCount;
+    }
+    public boolean getBipartite() {
+        return isBipartite;
+    }
+
+
+    public void isBipartite() {
         int src = 0;
-        int [] colorArr = new int[vertexCount];
+        colorArr = new int[vertexCount];
         for (int i = 0; i < colorArr.length ; i++) {
             colorArr[i] = -1;
         }
@@ -74,33 +90,15 @@ public class BipartiteGraph {
 
             for (int i = 0; i < vertexCount; i++) {
 
-                if(adjacencyList.get(u).get(i) > 0 && colorArr[i] == -1) {
+                if(hasEdge(u,i)  && colorArr[i] == -1) {
                     colorArr[i] = 1 - colorArr[u];
                     queue.add(i);
-                }else if(adjacencyList.get(u).get(i) > 0 && colorArr[i] == colorArr[u]) {
+                }else if(hasEdge(u,i) && colorArr[i] == colorArr[u]) {
                     isBipartite = false;
                 }
             }
         }
         isBipartite = true;
-    }
-
-
-    private boolean hasAugmentedPath(Graph biGraph) {
-        marked = new boolean[vertexCount];
-
-
-
-
-
-
-        return false;
-    }
-
-
-
-    public static void main(String[] args) {
-
     }
 
 }
