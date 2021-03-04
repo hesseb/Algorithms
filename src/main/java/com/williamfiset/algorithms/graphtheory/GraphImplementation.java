@@ -17,7 +17,7 @@ public class GraphImplementation {
 
     private boolean[] visited;
 
-    void initAdjacencyList(){
+    public void initAdjacencyList(){
         //adds one extra element in case element 0 is unused
         for(int i=0; i<=numVertices; i++){
             adjacencyList.add(new ArrayList<Integer>());
