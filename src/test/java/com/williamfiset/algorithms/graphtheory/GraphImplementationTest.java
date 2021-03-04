@@ -4,6 +4,8 @@ import org.graalvm.compiler.graph.Graph;
 import org.junit.Test;
 
 import javax.naming.OperationNotSupportedException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GraphImplementationTest {
     @Test
@@ -84,6 +86,33 @@ public class GraphImplementationTest {
     }
 
     @Test
+    public void testVisited(){
+        GraphImplementation graph = new GraphImplementation(2);
+        assert(!graph.isVisited(1));
+        graph.setVisited(1, true);
+        assert(graph.isVisited(1));
+    }
+
+    public boolean allEmpty(List<List<Integer>> adjacencyList){
+        boolean allEmpty = true;
+        for(int i=0; i<adjacencyList.size(); i++){
+            if(!adjacencyList.get(i).isEmpty()){
+                allEmpty = false;
+                break;
+            }
+        }
+        return allEmpty;
+    }
+
+    @Test
+    public void testClear(){
+        GraphImplementation graph = new GraphImplementation(new int[]{0}, new int[]{1}, false, 2);
+        assert(!allEmpty(graph.getAdjacencyList()));
+        graph.clear();
+        assert(allEmpty(graph.getAdjacencyList()));
+    }
+
+    @Test
     public void testPrintGraph(){
         String expected = "0:\n" +
                 "0->1, 0->2\n" +
@@ -91,7 +120,7 @@ public class GraphImplementationTest {
                 "1->0, 1->2\n" +
                 "2:\n" +
                 "2->1, 2->0\n";
-        GraphImplementation graph = new GraphImplementation(new int[]{0,1,2}, new int[]{1,2,0}, false, 3);
+        GraphImplementation graph = new GraphImplementation(new int[]{0,1,2}, new int[]{1,2,0}, false, 4);
 
         assert(graph.toString().equals(expected));
     }
