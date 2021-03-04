@@ -1,8 +1,6 @@
 package com.williamfiset.algorithms.graphtheory;
 
-import java.util.ArrayList;
 import java.util.*;
-import com.williamfiset.algorithms.utils.graphutils.Utils;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -17,14 +15,12 @@ public class TwoSat {
     private GraphImplementation graph;
     private GraphImplementation inverseGraph;
 
-    private static int numVariables;
+    private static int numVertices;
     private static int numClauses;
 
     private String clauseExceptionMessage = "number of clauses do not match up";
-    private String variableAmountNegativeExceptionMessage = "number of variables cannot be negative";
-
-    private boolean[] visited;
-    private boolean[] visitedInverse;
+    private String vertexAmountNegativeExceptionMessage = "number of variables cannot be negative";
+    private String illegalStateExceptionMessage = "clauses have not yet been specified";
 
     private int MAX;
 
@@ -33,44 +29,70 @@ public class TwoSat {
     private int counter = 1;
 
     Stack<Integer> stack = new Stack<Integer>();
-    public TwoSat(int[] a, int[] b, int numVariables) throws IllegalArgumentException{
-        if(a.length!=b.length){
-            throw new IllegalArgumentException(clauseExceptionMessage);
-        }
-        if(numVariables < 0){
-            throw new IllegalArgumentException(variableAmountNegativeExceptionMessage);
-        }
-        this.a = a;
-        this.b = b;
-        numClauses = a.length;
-        this.numVariables = numVariables;
 
-        MAX = Math.max(numVariables*2, numClauses*4);
+    public void initializeVertices(int numVertices)throws IllegalArgumentException{
+        if(numVertices < 0){
+            throw new IllegalArgumentException(vertexAmountNegativeExceptionMessage);
+        }
+
+        this.numVertices = numVertices;
+
+        MAX = numVertices*2+1;
 
         graph = new GraphImplementation(MAX);
         inverseGraph = new GraphImplementation(MAX);
 
-        visited = new boolean[MAX];
-        visitedInverse = new boolean[MAX];
         scc = new int[MAX];
+    }
 
-        solve();
+    public TwoSat(int numVertices)throws IllegalArgumentException{
+        initializeVertices(numVertices);
+    }
+
+    public TwoSat(int[] a, int[] b, int numVertices) throws IllegalArgumentException{
+        initializeVertices(numVertices);
+        setClauses(a,b);
+    }
+
+    public void clear(){
+        graph.clear();
+        inverseGraph.clear();
+
+        for(int i=0; i<MAX; i++){
+            scc[i] = 0;
+        }
+
+        solved = false;
+        isSatisfiable = false;
+    }
+
+    public void setClauses(int[] a, int[] b)throws IllegalArgumentException{
+        if(a.length!=b.length){
+            throw new IllegalArgumentException(clauseExceptionMessage);
+        }
+        this.a = a;
+        this.b = b;
+        numClauses = a.length;
     }
 
     public String getClauseExceptionMessage(){
         return clauseExceptionMessage;
     }
 
-    public String getVariableAmountNegativeExceptionMessage(){
-        return variableAmountNegativeExceptionMessage;
+    public String getVertexAmountNegativeExceptionMessage(){
+        return vertexAmountNegativeExceptionMessage;
+    }
+
+    public String getIllegalStateExceptionMessage(){
+        return illegalStateExceptionMessage;
     }
 
     public void dfsFirst(int u){
-        if(visited[u]) {
+        if(graph.isVisited(u)) {
             return;
         }
 
-        visited[u] = true;
+        graph.setVisited(u, true);
         for(int i = 0; i< graph.getAdjacencyList().get(u).size(); i++){
             dfsFirst(graph.getAdjacencyList().get(u).get(i));
         }
@@ -79,11 +101,11 @@ public class TwoSat {
     }
 
     public void dfsSecond(int u){
-        if(visitedInverse[u]){
+        if(inverseGraph.isVisited(u)){
             return;
         }
 
-        visitedInverse[u] = true;
+        inverseGraph.setVisited(u, true);
         for(int i = 0; i< inverseGraph.getAdjacencyList().get(u).size(); i++){
             dfsSecond((inverseGraph.getAdjacencyList().get(u).get(i)));
         }
@@ -92,6 +114,10 @@ public class TwoSat {
     }
 
     public boolean isTwoSatisfiable(){
+        if(a == null || b == null || a.length == 0 || b.length == 0){
+            throw new IllegalStateException(illegalStateExceptionMessage);
+        }
+
         if(!solved){
             solve();
         }
@@ -106,23 +132,22 @@ public class TwoSat {
         //negation of x is mapped to n+x (=n-(-x))
         for(int i=0; i<numClauses; i++){
 
-            //TODO: check if the cases can be combined
             try{
                 if(a[i] > 0 && b[i] > 0){
                     //add edge from negated a to b
-                    graph.addDirectedEdge(a[i]+numVariables, b[i]);
+                    graph.addDirectedEdge(a[i]+ numVertices, b[i]);
                     //add flipped edge to inverse graph
-                    inverseGraph.addDirectedEdge(b[i], a[i]+numVariables);
+                    inverseGraph.addDirectedEdge(b[i], a[i]+ numVertices);
 
                     //add edge from negated b to a
-                    graph.addDirectedEdge(b[i]+numVariables, a[i]);
+                    graph.addDirectedEdge(b[i]+ numVertices, a[i]);
                     //add flipped edge to inverse graph
-                    inverseGraph.addDirectedEdge(a[i], b[i]+numVariables);
+                    inverseGraph.addDirectedEdge(a[i], b[i]+ numVertices);
                 } else if(a[i] > 0 && b[i] < 0){
                     //add edge from negated a to b
-                    graph.addDirectedEdge(a[i]+numVariables, numVariables-b[i]);
+                    graph.addDirectedEdge(a[i]+ numVertices, numVertices -b[i]);
                     //add flipped edge to inverse graph
-                    inverseGraph.addDirectedEdge(numVariables-b[i], a[i]+numVariables);
+                    inverseGraph.addDirectedEdge(numVertices -b[i], a[i]+ numVertices);
 
                     //add edge from negated b to a
                     graph.addDirectedEdge(-b[i], a[i]);
@@ -135,19 +160,19 @@ public class TwoSat {
                     inverseGraph.addDirectedEdge(b[i], -a[i]);
 
                     //add edge from negated b to a
-                    graph.addDirectedEdge(b[i]+numVariables, numVariables-a[i]);
+                    graph.addDirectedEdge(b[i]+ numVertices, numVertices -a[i]);
                     //add flipped edge to inverse graph
-                    inverseGraph.addDirectedEdge(numVariables-a[i], b[i]+numVariables);
+                    inverseGraph.addDirectedEdge(numVertices -a[i], b[i]+ numVertices);
                 } else{
                     //add edge from negated a to b
-                    graph.addDirectedEdge(-a[i], numVariables-b[i]);
+                    graph.addDirectedEdge(-a[i], numVertices -b[i]);
                     //add flipped edge to inverse graph
-                    inverseGraph.addDirectedEdge(numVariables-b[i],-a[i]);
+                    inverseGraph.addDirectedEdge(numVertices -b[i],-a[i]);
 
                     //add edge from negated b to a
-                    graph.addDirectedEdge(-b[i], numVariables-a[i]);
+                    graph.addDirectedEdge(-b[i], numVertices -a[i]);
                     //add flipped edge to inverse graph
-                    inverseGraph.addDirectedEdge(numVariables-a[i], -b[i]);
+                    inverseGraph.addDirectedEdge(numVertices -a[i], -b[i]);
                 }
             }catch(OperationNotSupportedException exception){
                 exception.printStackTrace();
@@ -156,8 +181,8 @@ public class TwoSat {
         }
 
         //First step of Kosaraju's Algorithm
-        for(int i=1; i<=2*numVariables; i++){
-            if(!visited[i]){
+        for(int i = 1; i<=2* numVertices; i++){
+            if(!graph.isVisited(i)){
                 dfsFirst(i);
             }
         }
@@ -167,16 +192,16 @@ public class TwoSat {
         while(!stack.isEmpty()){
             int elem = stack.pop();
 
-            if(!visitedInverse[elem]){
+            if(!inverseGraph.isVisited(elem)){
                 dfsSecond(elem);
                 counter++;
             }
         }
 
-        for(int i=1; i<=numVariables; i++){
+        for(int i = 1; i<= numVertices; i++){
 
             //check if variable and negated variable are in the same Strongly Connected Component
-            if(scc[i] == scc[i+numVariables]){
+            if(scc[i] == scc[i+ numVertices]){
                 isSatisfiable = false;
                 solved = true;
                 return;

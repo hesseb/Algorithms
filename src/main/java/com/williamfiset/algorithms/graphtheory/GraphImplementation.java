@@ -15,6 +15,8 @@ public class GraphImplementation {
     private String operationNotSupportedExceptionMessage = "cannot add directed edge to undirected graph";
     private boolean directed = true;
 
+    private boolean[] visited;
+
     void initAdjacencyList(){
         //adds one extra element in case element 0 is unused
         for(int i=0; i<=numVertices; i++){
@@ -24,6 +26,13 @@ public class GraphImplementation {
 
     public List<List<Integer>> getAdjacencyList(){
         return adjacencyList;
+    }
+
+    public void clear(){
+        for(int i=0; i<=numVertices; i++){
+            adjacencyList.get(i).clear();
+            visited[i] = false;
+        }
     }
 
     public String toString(){
@@ -47,6 +56,9 @@ public class GraphImplementation {
 
     public GraphImplementation(int numVertices){
         this.numVertices = numVertices;
+
+        //adds one extra element in case element 0 is unused
+        visited = new boolean[numVertices+1];
         initAdjacencyList();
     }
 
@@ -56,6 +68,9 @@ public class GraphImplementation {
         }
         this.numVertices = numVertices;
         this.directed = directed;
+
+        //adds one extra element in case element 0 is unused
+        visited = new boolean[numVertices+1];
 
         initAdjacencyList();
 
@@ -135,5 +150,13 @@ public class GraphImplementation {
 
     public int getNumVertices(){
         return numVertices;
+    }
+
+    public boolean isVisited(int index) {
+        return visited[index];
+    }
+
+    public void setVisited(int index, boolean value){
+        visited[index] = value;
     }
 }
