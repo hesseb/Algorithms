@@ -37,7 +37,6 @@ public class BipartiteGraph {
         for (int i = 0; i < adjacencyList.get(from).size(); i++) {
             if (adjacencyList.get(from).get(i) == to) {
                 adjacencyList.get(from).remove(i);
-                numEdges--;
                 break;
             }
         }
@@ -52,6 +51,7 @@ public class BipartiteGraph {
     public void removeEdge(int from, int to) {
         removeDirectedEdge(from, to);
         removeDirectedEdge(to, from);
+        numEdges--;
     }
 
     public int getColor(int vertex) {
@@ -65,40 +65,57 @@ public class BipartiteGraph {
     public int getVertexCount() {
         return this.vertexCount;
     }
+
     public boolean getBipartite() {
         return isBipartite;
     }
 
+    public int getNumEdges(){
+        return this.numEdges;
+    }
 
-    public void isBipartite() {
-        int src = 0;
+
+    public boolean isBipartite() {
         colorArr = new int[vertexCount];
         for (int i = 0; i < colorArr.length ; i++) {
             colorArr[i] = -1;
         }
-        colorArr[src] = 1;
+
 
         LinkedList<Integer> queue = new LinkedList<>();
+        for (int src = 0; src < vertexCount; src++) {
+            if (colorArr[src] == -1) {
+                colorArr[src] = 0;
+            }
+
         queue.add(src);
+
         while(!queue.isEmpty()) {
 
             int u = queue.poll();
 
-            if(adjacencyList.get(u).contains(u)) {
-                isBipartite = false;
+            if(hasEdge(u,u)) {
+               return false;
             }
 
-            for (int i = 0; i < vertexCount; i++) {
+            for (int i = 0; i < adjacencyList.get(u).size(); i++) {
 
-                if(hasEdge(u,i)  && colorArr[i] == -1) {
-                    colorArr[i] = 1 - colorArr[u];
-                    queue.add(i);
-                }else if(hasEdge(u,i) && colorArr[i] == colorArr[u]) {
-                    isBipartite = false;
+                int dest = adjacencyList.get(u).get(i);
+
+                if (colorArr[dest] == -1) {
+                    if (colorArr[u] == 0) {
+                        colorArr[dest] = 1;
+                    }else if (colorArr[u] == 1) {
+                        colorArr[dest] = 0;
+                    }
+                    queue.add(dest);
+                }else if (colorArr[u] == colorArr[dest]) {
+                    return false;
                 }
             }
         }
-        isBipartite = true;
+        }
+        return true;
     }
 
 }

@@ -165,22 +165,21 @@ public class Koenig {
 
     public static void main(String[] args) {
         BipartiteGraph graph = new BipartiteGraph(4);
-        graph.addEdge(0,2);
+        graph.addEdge(0,1);
         graph.addEdge(0,3);
+        graph.addEdge(0,2);
         graph.addEdge(1,2);
         graph.addEdge(1,3);
-        graph.isBipartite();
-        for (int i = 0; i <graph.colorArr.length ; i++) {
-            System.out.println(graph.colorArr[i]);
-        }
-        if (graph.getBipartite()) {
+
+        if (graph.isBipartite()) {
             Koenig k = new Koenig(graph);
             for (int i = 0; i <k.inMinVertexCover.length ; i++) {
-                System.out.println(k.inMinVertexCover[i]);
+                //System.out.println(k.inMinVertexCover[i]);
             }
-            //System.out.println("True");
+            System.out.println("Bipartite: " + graph.isBipartite());
+            System.out.println(k.checkSolution(graph));
         } else {
-            System.out.println("false");
+            System.out.println("Bipartite: " + graph.isBipartite());
         }
 
     }
