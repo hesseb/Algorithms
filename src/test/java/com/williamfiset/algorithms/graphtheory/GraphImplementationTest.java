@@ -113,6 +113,13 @@ public class GraphImplementationTest {
     }
 
     @Test
+    public void testGetNeighbors(){
+        GraphImplementation graph = new GraphImplementation(new int[]{0}, new int[]{1}, false, 2);
+        int vertex = 0;
+        assert(graph.getAdjacencyList().get(vertex).equals(graph.getNeighbors(vertex)));
+    }
+
+    @Test
     public void testPrintGraph(){
         String expected = "0:\n" +
                 "0->1, 0->2\n" +

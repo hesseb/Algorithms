@@ -93,8 +93,8 @@ public class TwoSat {
         }
 
         graph.setVisited(u, true);
-        for(int i = 0; i< graph.getAdjacencyList().get(u).size(); i++){
-            dfsFirst(graph.getAdjacencyList().get(u).get(i));
+        for(int v = 0; v< graph.getNeighbors(u).size(); v++){
+            dfsFirst(graph.getNeighbors(u).get(v));
         }
 
         stack.push(u);
@@ -106,8 +106,8 @@ public class TwoSat {
         }
 
         inverseGraph.setVisited(u, true);
-        for(int i = 0; i< inverseGraph.getAdjacencyList().get(u).size(); i++){
-            dfsSecond((inverseGraph.getAdjacencyList().get(u).get(i)));
+        for(int v = 0; v< inverseGraph.getNeighbors(u).size(); v++){
+            dfsSecond((inverseGraph.getNeighbors(u).get(v)));
         }
 
         scc[u] = counter;

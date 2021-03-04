@@ -28,6 +28,10 @@ public class GraphImplementation {
         return adjacencyList;
     }
 
+    public List<Integer> getNeighbors(int vertex){
+        return adjacencyList.get(vertex);
+    }
+
     public void clear(){
         for(int i=0; i<=numVertices; i++){
             adjacencyList.get(i).clear();
@@ -152,11 +156,11 @@ public class GraphImplementation {
         return numVertices;
     }
 
-    public boolean isVisited(int index) {
-        return visited[index];
+    public boolean isVisited(int vertex) {
+        return visited[vertex];
     }
 
-    public void setVisited(int index, boolean value){
-        visited[index] = value;
+    public void setVisited(int vertex, boolean value){
+        visited[vertex] = value;
     }
 }
