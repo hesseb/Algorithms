@@ -30,6 +30,13 @@ public class TwoSat {
 
     Stack<Integer> stack = new Stack<Integer>();
 
+
+    /**
+     * Initializes (maximum) number of vertices and the vector specifying which SCC a vertex belongs to
+     *
+     * @param numVertices
+     * @throws IllegalArgumentException
+     */
     public void initializeVertices(int numVertices)throws IllegalArgumentException{
         if(numVertices < 0){
             throw new IllegalArgumentException(vertexAmountNegativeExceptionMessage);
@@ -45,15 +52,33 @@ public class TwoSat {
         scc = new int[MAX];
     }
 
+    /**
+     * Constructor which only specifies the number of vertices without specifying the clauses
+     *
+     * @param numVertices
+     * @throws IllegalArgumentException
+     */
     public TwoSat(int numVertices)throws IllegalArgumentException{
         initializeVertices(numVertices);
     }
 
+    /**
+     * Constructor specifying both the number of vertices and the exact clauses of the instance
+     *
+     * @param a
+     * @param b
+     * @param numVertices
+     * @throws IllegalArgumentException
+     */
     public TwoSat(int[] a, int[] b, int numVertices) throws IllegalArgumentException{
         initializeVertices(numVertices);
         setClauses(a,b);
     }
 
+    /**
+     * Clears the instance meaning that the adjacency lists and visited-vectors of the graphs are cleared
+     * and the scc vector is also reset. If the instance was considered solved that will no longer be the case.
+     */
     public void clear(){
         graph.clear();
         inverseGraph.clear();
@@ -66,6 +91,19 @@ public class TwoSat {
         isSatisfiable = false;
     }
 
+    /**
+     * Sets the clauses to the specified clauses.
+     *
+     * If clauses have already been set for the instance, then clear() needs to be called before calling this function.
+     *
+     * If instance has a number of vertices different to the number of vertices in the specified clauses,
+     * then initializeVertices() needs to be called with the new number of vertices before (or immediately after)
+     * calling this method.
+     *
+     * @param a
+     * @param b
+     * @throws IllegalArgumentException
+     */
     public void setClauses(int[] a, int[] b)throws IllegalArgumentException{
         if(a.length!=b.length){
             throw new IllegalArgumentException(clauseExceptionMessage);
@@ -75,18 +113,45 @@ public class TwoSat {
         numClauses = a.length;
     }
 
+    /**
+     * Returns exception message for when clause lengths do not match up
+     *
+     * Used for checking that the exception message is the same as expected when running tests
+     *
+     * @return String
+     */
     public String getClauseExceptionMessage(){
         return clauseExceptionMessage;
     }
 
+    /**
+     * Returns exception message for when vertex amount given is negative
+     *
+     * Used for checking that the exception message is the same as expected when running tests
+     *
+     * @return String
+     */
     public String getVertexAmountNegativeExceptionMessage(){
         return vertexAmountNegativeExceptionMessage;
     }
 
+    /**
+     * Returns exception message for when solve is called without specifying clauses first
+     *
+     * Used for checking that the exception message is the same as expected when running tests
+     *
+     * @return String
+     */
     public String getIllegalStateExceptionMessage(){
         return illegalStateExceptionMessage;
     }
 
+
+    /**
+     * Performs dfs on the original graph, constructed by adding (not A) -> B and (not B) -> A for clause (A and B).
+     *
+     * @param u
+     */
     public void dfsFirst(int u){
         if(graph.isVisited(u)) {
             return;
@@ -100,6 +165,12 @@ public class TwoSat {
         stack.push(u);
     }
 
+    /**
+     * Performs dfs on a graph which has all the edges flipped compared to the original graph
+     *
+     * Uses this to specify which Strongly Connected Component the vertex belongs to
+     * @param u
+     */
     public void dfsSecond(int u){
         if(inverseGraph.isVisited(u)){
             return;
@@ -113,7 +184,16 @@ public class TwoSat {
         scc[u] = counter;
     }
 
-    public boolean isTwoSatisfiable(){
+
+    /**
+     * Returns whether or not the instance has any solutions
+     *
+     * Throws an exception if no clauses are specified
+     *
+     * @return
+     * @throws IllegalStateException
+     */
+    public boolean isTwoSatisfiable()throws IllegalStateException{
         if(a == null || b == null || a.length == 0 || b.length == 0){
             throw new IllegalStateException(illegalStateExceptionMessage);
         }
@@ -124,7 +204,15 @@ public class TwoSat {
         return isSatisfiable;
     }
 
-    public void solve(){
+    /**
+     * Solves the instance by:
+     *
+     * -Constructing the graph by adding (not A) -> B and (not B) -> A for any clause (A and B).
+     *
+     * -Checking if there is a path from any vertex A to (not A) and from (not A) to A. If so,
+     * then the instance has no solution, otherwise solutions do exist.
+     */
+    private void solve(){
 
         //adding the edges to the graph representing the conjunctive formula
 

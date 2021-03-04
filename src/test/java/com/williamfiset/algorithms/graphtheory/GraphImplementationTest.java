@@ -1,10 +1,8 @@
 package com.williamfiset.algorithms.graphtheory;
 
-import org.graalvm.compiler.graph.Graph;
 import org.junit.Test;
 
 import javax.naming.OperationNotSupportedException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GraphImplementationTest {
@@ -107,16 +105,16 @@ public class GraphImplementationTest {
     @Test
     public void testClear(){
         GraphImplementation graph = new GraphImplementation(new int[]{0}, new int[]{1}, false, 2);
-        assert(!allEmpty(graph.getAdjacencyList()));
+        assert(!allEmpty(graph.getAdjacencyLists()));
         graph.clear();
-        assert(allEmpty(graph.getAdjacencyList()));
+        assert(allEmpty(graph.getAdjacencyLists()));
     }
 
     @Test
     public void testGetNeighbors(){
         GraphImplementation graph = new GraphImplementation(new int[]{0}, new int[]{1}, false, 2);
         int vertex = 0;
-        assert(graph.getAdjacencyList().get(vertex).equals(graph.getNeighbors(vertex)));
+        assert(graph.getAdjacencyLists().get(vertex).equals(graph.getNeighbors(vertex)));
     }
 
     @Test
