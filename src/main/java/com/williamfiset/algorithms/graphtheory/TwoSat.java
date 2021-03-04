@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.*;
 import com.williamfiset.algorithms.utils.graphutils.Utils;
 
+import javax.naming.OperationNotSupportedException;
+
 public class TwoSat {
     private boolean isSatisfiable = false;
     private boolean solved = false;
@@ -12,11 +14,14 @@ public class TwoSat {
     private int[] b;
 
 
-    private List<List<Integer>> adjacencyList = new ArrayList<>();
-    private List<List<Integer>> adjacencyListInverse = new ArrayList<>();
+    private GraphImplementation graph;
+    private GraphImplementation inverseGraph;
 
     private static int numVariables;
     private static int numClauses;
+
+    private String clauseExceptionMessage = "number of clauses do not match up";
+    private String variableAmountNegativeExceptionMessage = "number of variables cannot be negative";
 
     private boolean[] visited;
     private boolean[] visitedInverse;
@@ -30,10 +35,10 @@ public class TwoSat {
     Stack<Integer> stack = new Stack<Integer>();
     public TwoSat(int[] a, int[] b, int numVariables) throws IllegalArgumentException{
         if(a.length!=b.length){
-            throw new IllegalArgumentException("number of clauses do not match up");
+            throw new IllegalArgumentException(clauseExceptionMessage);
         }
         if(numVariables < 0){
-            throw new IllegalArgumentException("number of variables cannot be negative");
+            throw new IllegalArgumentException(variableAmountNegativeExceptionMessage);
         }
         this.a = a;
         this.b = b;
@@ -42,10 +47,8 @@ public class TwoSat {
 
         MAX = Math.max(numVariables*2, numClauses*4);
 
-        for(int i=0; i<MAX; i++){
-            adjacencyList.add(new ArrayList<Integer>());
-            adjacencyListInverse.add(new ArrayList<Integer>());
-        }
+        graph = new GraphImplementation(MAX);
+        inverseGraph = new GraphImplementation(MAX);
 
         visited = new boolean[MAX];
         visitedInverse = new boolean[MAX];
@@ -54,20 +57,12 @@ public class TwoSat {
         solve();
     }
 
-    public void addEdge(int a, int b, boolean inverse){
-        if(!inverse){
-            adjacencyList.get(a).add(b);
-        }else{
-            adjacencyListInverse.get(b).add(a);
-        }
+    public String getClauseExceptionMessage(){
+        return clauseExceptionMessage;
     }
 
-    public void addEdge(int a, int b){
-        adjacencyList.get(a).add(b);
-    }
-
-    public void addEdgeInverse(int a, int b){
-        adjacencyListInverse.get(b).add(a);
+    public String getVariableAmountNegativeExceptionMessage(){
+        return variableAmountNegativeExceptionMessage;
     }
 
     public void dfsFirst(int u){
@@ -76,8 +71,8 @@ public class TwoSat {
         }
 
         visited[u] = true;
-        for(int i = 0; i< adjacencyList.get(u).size(); i++){
-            dfsFirst(adjacencyList.get(u).get(i));
+        for(int i = 0; i< graph.getAdjacencyList().get(u).size(); i++){
+            dfsFirst(graph.getAdjacencyList().get(u).get(i));
         }
 
         stack.push(u);
@@ -89,8 +84,8 @@ public class TwoSat {
         }
 
         visitedInverse[u] = true;
-        for(int i = 0; i< adjacencyListInverse.get(u).size(); i++){
-            dfsSecond((adjacencyListInverse.get(u).get(i)));
+        for(int i = 0; i< inverseGraph.getAdjacencyList().get(u).size(); i++){
+            dfsSecond((inverseGraph.getAdjacencyList().get(u).get(i)));
         }
 
         scc[u] = counter;
@@ -105,54 +100,59 @@ public class TwoSat {
 
     public void solve(){
 
-        //adding the edges to the graph representing the conjuctive formula
+        //adding the edges to the graph representing the conjunctive formula
 
         //x is mapped to x
         //negation of x is mapped to n+x (=n-(-x))
         for(int i=0; i<numClauses; i++){
 
             //TODO: check if the cases can be combined
-            if(a[i] > 0 && b[i] > 0){
-                //add edge from negated a to b
-                addEdge(a[i]+numVariables, b[i], false);
-                //add flipped edge to inverse graph
-                addEdge(a[i]+numVariables, b[i], true);
+            try{
+                if(a[i] > 0 && b[i] > 0){
+                    //add edge from negated a to b
+                    graph.addDirectedEdge(a[i]+numVariables, b[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(b[i], a[i]+numVariables);
 
-                //add edge from negated b to a
-                addEdge(b[i]+numVariables, a[i], false);
-                //add flipped edge to inverse graph
-                addEdge(b[i]+numVariables, a[i], true);
-            } else if(a[i] > 0 && b[i] < 0){
-                //add edge from negated a to b
-                addEdge(a[i]+numVariables, numVariables-b[i], false);
-                //add flipped edge to inverse graph
-                addEdge(a[i]+numVariables, numVariables-b[i], true);
+                    //add edge from negated b to a
+                    graph.addDirectedEdge(b[i]+numVariables, a[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(a[i], b[i]+numVariables);
+                } else if(a[i] > 0 && b[i] < 0){
+                    //add edge from negated a to b
+                    graph.addDirectedEdge(a[i]+numVariables, numVariables-b[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(numVariables-b[i], a[i]+numVariables);
 
-                //add edge from negated b to a
-                addEdge(-b[i], a[i], false);
-                //add flipped edge to inverse graph
-                addEdge(-b[i], a[i], true);
-            } else if(a[i] < 0 && b[i] > 0){
-                //add edge from negated a to b
-                addEdge(-a[i], b[i], false);
-                //add flipped edge to inverse graph
-                addEdge(-a[i], b[i], true);
+                    //add edge from negated b to a
+                    graph.addDirectedEdge(-b[i], a[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(a[i], -b[i]);
+                } else if(a[i] < 0 && b[i] > 0){
+                    //add edge from negated a to b
+                    graph.addDirectedEdge(-a[i], b[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(b[i], -a[i]);
 
-                //add edge from negated b to a
-                addEdge(b[i]+numVariables, numVariables-a[i], false);
-                //add flipped edge to inverse graph
-                addEdge(b[i]+numVariables, numVariables-a[i], true);
-            } else{
-                //add edge from negated a to b
-                addEdge(-a[i], numVariables-b[i], false);
-                //add flipped edge to inverse graph
-                addEdge(-a[i], numVariables-b[i], true);
+                    //add edge from negated b to a
+                    graph.addDirectedEdge(b[i]+numVariables, numVariables-a[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(numVariables-a[i], b[i]+numVariables);
+                } else{
+                    //add edge from negated a to b
+                    graph.addDirectedEdge(-a[i], numVariables-b[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(numVariables-b[i],-a[i]);
 
-                //add edge from negated b to a
-                addEdge(-b[i], numVariables-a[i], false);
-                //add flipped edge to inverse graph
-                addEdge(-b[i], numVariables-a[i], true);
+                    //add edge from negated b to a
+                    graph.addDirectedEdge(-b[i], numVariables-a[i]);
+                    //add flipped edge to inverse graph
+                    inverseGraph.addDirectedEdge(numVariables-a[i], -b[i]);
+                }
+            }catch(OperationNotSupportedException exception){
+                exception.printStackTrace();
             }
+
         }
 
         //First step of Kosaraju's Algorithm
@@ -185,13 +185,6 @@ public class TwoSat {
 
         isSatisfiable = true;
         solved = true;
-    }
-
-    public static void main(String[] args){
-        int[] a = {1,-2,-1,3,-3,-4,-3};
-        int[] b = {2,3,-2,4,5,-5,4};
-        TwoSat twosat = new TwoSat(a, b, 5);
-        System.out.println("isSolvable: "+twosat.isTwoSatisfiable());
     }
 
 }

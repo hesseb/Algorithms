@@ -16,9 +16,14 @@ public class GraphImplementation {
     private boolean directed = true;
 
     void initAdjacencyList(){
-        for(int i=0; i<numVertices; i++){
+        //adds one extra element in case element 0 is unused
+        for(int i=0; i<=numVertices; i++){
             adjacencyList.add(new ArrayList<Integer>());
         }
+    }
+
+    public List<List<Integer>> getAdjacencyList(){
+        return adjacencyList;
     }
 
     public String toString(){
