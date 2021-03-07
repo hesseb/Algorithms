@@ -48,7 +48,6 @@ public class Koenig {
                 inMinVertexCover[i] = true;
             }
         }
-        assert checkSolution(graph);
     }
 
 
@@ -99,7 +98,7 @@ public class Koenig {
         return match[vertex] != UNMATCHED;
     }
 
-    private boolean checkSolution(BipartiteGraph graph) {
+    public boolean checkSolution(BipartiteGraph graph) {
         for (int i = 0; i < V; i++) {
             if (match[i] == -1) continue;
             if (match[match[i]] != i) return false;
