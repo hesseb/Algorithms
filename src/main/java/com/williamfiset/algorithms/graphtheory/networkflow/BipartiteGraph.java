@@ -11,7 +11,6 @@ public class BipartiteGraph {
 
     private int vertexCount;
     private int numEdges = 0;
-    private static boolean isBipartite;
     int [] colorArr;
 
     public BipartiteGraph(int V) {
@@ -66,9 +65,6 @@ public class BipartiteGraph {
         return this.vertexCount;
     }
 
-    public boolean getBipartite() {
-        return isBipartite;
-    }
 
     public int getNumEdges(){
         return this.numEdges;
