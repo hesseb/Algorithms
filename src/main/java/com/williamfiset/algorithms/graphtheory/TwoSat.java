@@ -207,7 +207,7 @@ public class TwoSat {
     /**
      * Solves the instance by:
      *
-     * -Constructing the graph by adding (not A) -> B and (not B) -> A for any clause (A and B).
+     * -Constructing the graph by adding (not A) -> B and (not B) -> A for any clause (A or B).
      *
      * -Checking if there is a path from any vertex A to (not A) and from (not A) to A. If so,
      * then the instance has no solution, otherwise solutions do exist.
