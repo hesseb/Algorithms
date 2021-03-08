@@ -138,6 +138,49 @@ public class GraphImplementation {
     }
 
     /**
+     * Alternative constructor taking in a single vector holding the edges, where two consecutive elements
+     * (of which the prior has an even index) form an edge.
+     *
+     * Throws an exception if there is an uneven amount of elements in the edge-vector as this means that one edge is not complete
+     *
+     * @param edges
+     * @param directed
+     * @param numVertices
+     * @throws IllegalArgumentException
+     */
+    public GraphImplementation(int[] edges, boolean directed, int numVertices)throws IllegalArgumentException{
+        if(edges.length % 2 != 0){
+            throw new IllegalArgumentException(illegalArgumentExceptionMessage);
+        }
+
+        this.numVertices = numVertices;
+        this.directed = directed;
+
+        //adds one extra element in case element 0 is unused
+        visited = new boolean[numVertices+1];
+
+        initAdjacencyList();
+
+        for(int i=0; i<edges.length; i+=2){
+            if(directed){
+                try{
+                    addDirectedEdge(edges[i], edges[i+1]);
+                }catch(OperationNotSupportedException exception){
+                    //This code is unreachable as directed would not be false if this clause is entered
+                    exception.printStackTrace();
+                }
+            } else{
+                try{
+                    addUndirectedEdge(edges[i], edges[i+1]);
+                }catch(OperationNotSupportedException exception){
+                    //This code is unreachable due to the temporary change of directed flag value when adding directed edge
+                    exception.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
      * Returns exception message for when length of vector of first element in each clause is not the same as the vector
      * with second element in each clause
      *

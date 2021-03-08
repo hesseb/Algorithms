@@ -77,6 +77,11 @@ public class TwoSat {
         setClauses(a,b);
     }
 
+    public TwoSat(int[] clauses, int numVertices)throws IllegalArgumentException{
+        initializeVertices(numVertices);
+        setClauses(clauses);
+    }
+
     /**
      * Clears the instance meaning that the adjacency lists and visited-vectors of the graphs are cleared
      * and the scc vector is also reset. If the instance was considered solved that will no longer be the case.
@@ -115,6 +120,35 @@ public class TwoSat {
         this.a = a;
         this.b = b;
         numClauses = a.length;
+    }
+
+    /**
+     * Alternative constructor providing the edges in a single array
+     * where two consecutive elements (of which the prior has an even index)
+     * form an edge
+     *
+     * Throws IllegalArgumentException if length of array is uneven,
+     * meaning that one edge is incomplete
+     * @param clauses
+     * @throws IllegalArgumentException
+     */
+    public void setClauses(int[] clauses) throws IllegalArgumentException{
+        if(clauses.length % 2 != 0){
+            throw new IllegalArgumentException(clauseExceptionMessage);
+        }
+
+        numClauses = clauses.length/2;
+        int[] a = new int[numClauses];
+        int[] b = new int[numClauses];
+
+        int index = 0;
+        for(int i=0; i<clauses.length; i+=2){
+            a[index] = clauses[i];
+            b[index] = clauses[i+1];
+            index++;
+        }
+        this.a = a;
+        this.b = b;
     }
 
     /**

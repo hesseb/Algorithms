@@ -5,6 +5,8 @@ import org.junit.Test;
 import javax.naming.OperationNotSupportedException;
 import java.util.List;
 
+import static org.junit.Assert.assertThrows;
+
 public class GraphImplementationTest {
     @Test
     public void testSimpleConstructor(){
@@ -28,11 +30,34 @@ public class GraphImplementationTest {
     @Test
     public void testDirectedGraphConstructorIllegalArgumentExceptionClause(){
         GraphImplementation graph = new GraphImplementation(2);
-        try{
-            graph = new GraphImplementation(new int[]{0}, new int[]{1,2}, true, 2);
-        } catch(IllegalArgumentException exception){
-            assert(exception.getMessage().equals(graph.getIllegalArgumentExceptionMessage()));
-        }
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new GraphImplementation(new int[]{0}, new int[]{1,2}, true, 3);
+        });
+        assert(exception.getMessage().equals(graph.getIllegalArgumentExceptionMessage()));
+    }
+
+    @Test
+    public void testDirectedEdgeSingleArrayConstructor(){
+        int[] edges = {0,1,2,3};
+        GraphImplementation graph = new GraphImplementation(edges, true, 4);
+        assert((graph.existsEdge(0,1) && graph.existsEdge(2,3)) && graph.getNumEdges() == 2);
+    }
+
+    @Test
+    public void testUndirectedEdgeSingleArrayConstructor(){
+        int[] edges = {0,1};
+        GraphImplementation graph = new GraphImplementation(edges, false, 4);
+        assert((graph.existsEdge(0,1) && graph.existsEdge(1,0)) && graph.getNumEdges() == 1);
+    }
+
+    @Test
+    public void testSingleArrayConstructorIllegalArgumentException(){
+        int[] edges = {0,1,2};
+        GraphImplementation graph = new GraphImplementation(3);
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            new GraphImplementation(edges, true, 3);
+        });
+        assert(exception.getMessage().equals(graph.getIllegalArgumentExceptionMessage()));
     }
 
     @Test
@@ -60,11 +85,10 @@ public class GraphImplementationTest {
     @Test
     public void testAddDirectedEdgeToUndirectedGraph(){
         GraphImplementation graph = new GraphImplementation(new int[]{0}, new int[]{1}, false, 2);
-        try{
+        Exception exception = assertThrows(OperationNotSupportedException.class, () -> {
             graph.addDirectedEdge(0,1);
-        }catch(OperationNotSupportedException exception){
-            assert(exception.getMessage().equals(graph.getOperationNotSupportedExceptionMessage()));
-        }
+        });
+        assert(exception.getMessage().equals(graph.getOperationNotSupportedExceptionMessage()));
     }
 
     @Test
