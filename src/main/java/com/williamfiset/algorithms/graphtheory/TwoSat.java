@@ -34,6 +34,8 @@ public class TwoSat {
     /**
      * Initializes (maximum) number of vertices and the vector specifying which SCC a vertex belongs to
      *
+     * Throws IllegalArgumentException if number of variables is set to a negative value
+     *
      * @param numVertices
      * @throws IllegalArgumentException
      */
@@ -99,6 +101,8 @@ public class TwoSat {
      * If instance has a number of vertices different to the number of vertices in the specified clauses,
      * then initializeVertices() needs to be called with the new number of vertices before (or immediately after)
      * calling this method.
+     *
+     * Throws IllegalArgumentException if lengths of clause-vectors don't match up
      *
      * @param a
      * @param b
