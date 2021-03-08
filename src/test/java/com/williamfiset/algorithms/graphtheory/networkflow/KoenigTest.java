@@ -31,8 +31,31 @@ public class KoenigTest {
         k2 = new Koenig(nonBiGraph);
 
         assert (!k2.checkSolution(nonBiGraph));
+    }
 
+    @Test
+    public void testLargeGraph() {
+        int size = 10000;
+        BipartiteGraph graph = new BipartiteGraph(size);
+        for (int i = 0; i < size-1; i++) {
+            graph.addEdge(i, (i+1));
+        }
+        assert (graph.isBipartite());
+        Koenig koenig1 = new Koenig(graph);
+        assert (koenig1.checkSolution(graph));
 
+        graph.addEdge(0, size-1);
+        graph.addEdge(0, 2);
+        assert (!graph.isBipartite());
+        Koenig koenig2 = new Koenig(graph);
+        assert (!koenig2.checkSolution(graph));
+    }
 
+    @Test
+    public void testEmptyGraph() {
+        BipartiteGraph graph = new BipartiteGraph(0);
+        assert (graph.isBipartite());
+        Koenig koenig1 = new Koenig(graph);
+        assert (koenig1.checkSolution(graph));
     }
 }
