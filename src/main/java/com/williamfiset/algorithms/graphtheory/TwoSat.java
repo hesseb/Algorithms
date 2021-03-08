@@ -148,7 +148,7 @@ public class TwoSat {
 
 
     /**
-     * Performs dfs on the original graph, constructed by adding (not A) -> B and (not B) -> A for clause (A and B).
+     * Performs dfs on the original graph, constructed by adding (not A) -> B and (not B) -> A for clause (A or B).
      *
      * @param u
      */
